@@ -1,0 +1,36 @@
+  
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v2
+
+      # Install .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      # Publish the site
+      - name: Publish
+        run: |
+            cp TimeKeeper/wwwroot/index.html TimeKeeper/wwwroot/404.html
+            dotnet publish TimeKeeper/TimeKeeper.csproj -o:public -c:Release
+      # Deploy the site
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public/wwwroot
+          force_orphan: true
+          keep_files: false
+          # TODO uncomment the following line if you have a custom domain name
+          cname: timekeeper.nielsen.tech
