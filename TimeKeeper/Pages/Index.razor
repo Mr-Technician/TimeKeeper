@@ -1,21 +1,57 @@
 ﻿@page "/"
+@using Blazored.LocalStorage;
 
-<MudContainer Class="mt-8" MaxWidth="MaxWidth.Small">
-    <MudCarousel Style="height:750px;" ShowDelimiters="false" AutoCycle="false" TData="object">
-        <MudCarouselItem Color="@Color.Primary">
-            <div class="d-flex" style="height:100%">
-                <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem Color="@Color.Secondary">
-            <div class="d-flex" style="height:100%">
-                <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem>
-            <div class="d-flex" style="height:100%">
-                <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Color="@Color.Primary" Size="@Size.Large" />
-            </div>
-        </MudCarouselItem>
-    </MudCarousel>
+<MudContainer Class="mt-16" MaxWidth="MaxWidth.Small">
+    @if (Days == null)
+    {
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    }
+    else
+    {
+        <MudCarousel Style="height:75vh;" @bind-SelectedIndex="SelectedIndex" ShowDelimiters="false" AutoCycle="false" TData="object">
+            @foreach (var day in Days)
+            {
+                <MudCarouselItem>
+                    <MudCard Outlined="true" Style="height:100%;">
+                        <MudCardHeader Class="justify-center">
+                            <MudText Typo="Typo.h6" Align="Align.Center">
+                                @day.Date.ToString("dddd, MMMM dd")
+                            </MudText>
+                        </MudCardHeader>
+                        <MudCardContent>
+
+                        </MudCardContent>
+                    </MudCard>                    
+                </MudCarouselItem>
+            }
+        </MudCarousel>
+    }
 </MudContainer>
+
+@code{
+    [Inject]
+    private ILocalStorageService localStorage { get; set; }
+    private Day[] Days;
+    private int SelectedIndex;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Days = await localStorage.GetItemAsync<Day[]>("timekeeper-days");
+
+        if (Days == null)
+        {
+            var sunday = DateTime.Now.Date.StartOfWeek(DayOfWeek.Sunday);
+            Days = new Day[] {
+                new Day(sunday),
+                new Day(sunday.AddDays(1)),
+                new Day(sunday.AddDays(2)),
+                new Day(sunday.AddDays(3)),
+                new Day(sunday.AddDays(4)),
+                new Day(sunday.AddDays(5)),
+                new Day(sunday.AddDays(6))
+            };
+        }
+
+        SelectedIndex = (int)DateTime.Now.DayOfWeek;
+    }
+}
