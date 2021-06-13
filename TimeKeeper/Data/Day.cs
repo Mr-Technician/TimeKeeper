@@ -13,7 +13,7 @@ namespace TimeKeeper.Data
         /// <summary>
         /// Stores the times worked within a day
         /// </summary>
-        public IList<UniqueTimeSpan> Times { get; set; }
+        public IList<TimeRange> Times { get; set; }
 
         /// <summary>
         /// The day the times are logged for
@@ -23,6 +23,7 @@ namespace TimeKeeper.Data
         public Day(DateTime date)
         {
             Date = date;
+            Times = new List<TimeRange>();
         }
     }
 }
