@@ -12,16 +12,49 @@
             @foreach (var day in Days)
             {
                 <MudCarouselItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Error" Class="ml-n12" Style="float: right;" OnClick="(() => DeleteTimes(day))"></MudIconButton>
                     <MudCard Outlined="true" Style="height:100%;">
                         <MudCardHeader Class="justify-center">
-                            <MudText Typo="Typo.h6" Align="Align.Center">
+                            <MudText Typo="Typo.h6">
                                 @day.Date.ToString("dddd, MMMM dd")
                             </MudText>
                         </MudCardHeader>
-                        <MudCardContent>
-
+                        <MudCardContent Style="height:100%; overflow-y:scroll;">
+                            <MudGrid>
+                                @if (day.Times != null)
+                                {
+                                    @foreach (TimeRange time in day.Times)
+                                    {
+                                        <MudItem xs="6">
+                                            <MudTooltip Text="@ExistingToolTip">
+                                                <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="time.Start" PickerClosed="SetDays" />
+                                            </MudTooltip>
+                                        </MudItem>
+                                        <MudItem xs="6">
+                                            <MudTooltip Text="@ExistingToolTip">
+                                                <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" Time="time.End" TimeChanged="((TimeSpan? t) => time.End = t)" PickerClosed="SetDays" />
+                                            </MudTooltip>
+                                        </MudItem>
+                                    }
+                                }
+                                <MudItem xs="6">
+                                    <MudTooltip Text="@NewToolTip">
+                                        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.Start" PickerClosed="(() => AddTime(day, newTime))" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudTooltip Text="@NewToolTip">
+                                        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.End" PickerClosed="(() => AddTime(day, newTime))" />
+                                    </MudTooltip>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudText>
+                                        @GetTotalTime(day)
+                                    </MudText>
+                                </MudItem>
+                            </MudGrid>
                         </MudCardContent>
-                    </MudCard>                    
+                    </MudCard>
                 </MudCarouselItem>
             }
         </MudCarousel>
@@ -34,8 +67,42 @@
     private Day[] Days;
     private int SelectedIndex;
 
+    private string NewToolTip = "Click to add time range";
+    private string ExistingToolTip = "Click to edit";
+
+    TimeRange newTime = new();
+
+    private TimeSpan GetTotalTime(Day day) => day.Times.Sum(x => x.GetTime());
+
+    private async Task AddTime(Day day, TimeRange time)
+    {
+        if (time.Start != default && time.End != default) //if valid, add the time
+        {
+            Console.WriteLine($"{time.Start}:{time.End}");
+            Console.WriteLine(day.Times.Count());
+            day.Times.Add(time);
+            newTime = new();
+            await SetDays();
+        }
+    }
+
+    private async Task DeleteTimes(Day day)
+    {
+        day.Times = new List<TimeRange>(); //reset days
+        await SetDays();
+    }
+
+    /// <summary>
+    /// Saves the days to local storage
+    /// </summary>
+    private async Task SetDays()
+    {
+        await localStorage.SetItemAsync("timekeeper-days", Days);
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine(nameof(OnInitializedAsync));
         Days = await localStorage.GetItemAsync<Day[]>("timekeeper-days");
 
         if (Days == null)
