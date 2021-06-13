@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="CustomTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -29,4 +29,13 @@
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    private readonly MudTheme CustomTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.LightBlue.Default, //set the primary color to SRF Blue
+            AppbarBackground = Colors.LightBlue.Accent3
+        }
+    };
 }
