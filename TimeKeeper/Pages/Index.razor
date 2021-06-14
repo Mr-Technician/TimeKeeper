@@ -37,19 +37,13 @@
                                         </MudItem>
                                     }
                                 }
-                                <MudItem xs="6">
-                                    <MudTooltip Text="@NewToolTip">
-                                        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.Start" PickerClosed="(() => AddTime(day, newTime))" />
-                                    </MudTooltip>
-                                </MudItem>
-                                <MudItem xs="6">
-                                    <MudTooltip Text="@NewToolTip">
-                                        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.End" PickerClosed="(() => AddTime(day, newTime))" />
-                                    </MudTooltip>
-                                </MudItem>
+                                <AddTime DateAdded="((TimeRange t) => AddTime(day, t))" />
                                 <MudItem xs="12">
-                                    <MudText>
-                                        @GetTotalTime(day)
+                                    <MudText Typo="Typo.body2" Align="Align.Center">
+                                        @GetTotalTime(day).ToString(@"hh\:mm")
+                                    </MudText>
+                                    <MudText Color="Color.Error" Typo="Typo.h5" Align="Align.Center">
+                                        @(Math.Round(GetTotalTime(day).TotalSeconds / 60 / 60, 1))
                                     </MudText>
                                 </MudItem>
                             </MudGrid>
@@ -67,23 +61,16 @@
     private Day[] Days;
     private int SelectedIndex;
 
-    private string NewToolTip = "Click to add time range";
     private string ExistingToolTip = "Click to edit";
-
-    TimeRange newTime = new();
 
     private TimeSpan GetTotalTime(Day day) => day.Times.Sum(x => x.GetTime());
 
     private async Task AddTime(Day day, TimeRange time)
     {
-        if (time.Start != default && time.End != default) //if valid, add the time
-        {
-            Console.WriteLine($"{time.Start}:{time.End}");
-            Console.WriteLine(day.Times.Count());
-            day.Times.Add(time);
-            newTime = new();
-            await SetDays();
-        }
+        Console.WriteLine($"{time.Start}:{time.End}");
+        Console.WriteLine(day.Times.Count());
+        day.Times.Add(time);
+        await SetDays();
     }
 
     private async Task DeleteTimes(Day day)
