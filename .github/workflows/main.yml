@@ -23,13 +23,31 @@ jobs:
       - name: Publish
         run: |
             cp TimeKeeper/wwwroot/index.html TimeKeeper/wwwroot/404.html
-            dotnet publish TimeKeeper/TimeKeeper.csproj -o:public -c:Release
+            dotnet publish TimeKeeper/TimeKeeper.csproj -c Release -o Prerender/output --nologo
+            
+     # Use NodeJS react-snap utility to prerender static website
+      - name: Prerender Blazor Client
+        working-directory: Prerender
+        run: npx react-snap
+    
+    # remove script tags after prerender
+      - name: Remove Script Tags
+        working-directory: Prerender/output/wwwroot
+        run: |
+         find . -name "*.html" | while read htmlFile; do
+            sed -i 's/<script type="text\/javascript">var Module; window.__wasmmodulecallback__(); delete window.__wasmmodulecallback__;<\/script><script src="_framework\/dotnet.5.0.7.js" defer="" integrity="sha256-eVXC3H\/4m+ezQQjTc2E1OnklHv6g4ww4m3wKRI8boW8=" crossorigin="anonymous"><\/script>//g' $htmlFile
+         done
+    # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
+      - name: Add .nojekyll file
+        run: touch Prerender/output/wwwroot/.nojekyll
+
       # Deploy the site
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public/wwwroot
+          #publish_dir: public/wwwroot
+          publish_dir: Prerender/output/wwwroot
           force_orphan: true
           keep_files: false
           # TODO uncomment the following line if you have a custom domain name
