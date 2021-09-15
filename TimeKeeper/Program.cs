@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TimeKeeper.Services;
 
 namespace TimeKeeper
 {
@@ -24,6 +25,8 @@ namespace TimeKeeper
             builder.Services.AddMudServices();
 
             builder.Services.AddBlazoredLocalStorage();
+
+            builder.Services.AddSingleton<PrerenderService>();
 
             await builder.Build().RunAsync();
         }
