@@ -89,10 +89,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine(nameof(OnInitializedAsync));
         Days = await localStorage.GetItemAsync<Day[]>("timekeeper-days");
 
-        if (Days == null)
+        if (Days == null || Days.FirstOrDefault()?.Date != DateTime.Now.Date.StartOfWeek(DayOfWeek.Sunday)) //if null or the incorrect start of week is set
         {
             var sunday = DateTime.Now.Date.StartOfWeek(DayOfWeek.Sunday);
             Days = new Day[] {
