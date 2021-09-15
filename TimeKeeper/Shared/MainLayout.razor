@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using TimeKeeper.Services;
+@inject PrerenderService Prerender;
 
 <MudThemeProvider Theme="CustomTheme" />
 <MudDialogProvider />
@@ -20,7 +22,16 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        @Body
+        @if (Prerender.IsPrerendering())
+        {
+            <div class="d-flex justify-center mt-6">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            </div>
+        }
+        else
+        {
+            @Body
+        }
     </MudMainContent>
 </MudLayout>
 
@@ -40,4 +51,9 @@
             AppbarBackground = Colors.LightBlue.Accent3
         }
     };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Prerender.UpdateIsPrerendering();
+    }
 }
