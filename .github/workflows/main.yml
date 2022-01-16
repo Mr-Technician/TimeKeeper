@@ -34,7 +34,7 @@ jobs:
         working-directory: Prerender/output/wwwroot
         run: |
          find . -name "*.html" | while read htmlFile; do
-            sed -i 's/<script type="text\/javascript">var Module; window.__wasmmodulecallback__(); delete window.__wasmmodulecallback__;<\/script><script src="_framework\/dotnet.6.0.1.z73szgq89c.js" defer="" integrity="sha256-awQsJ\/WxYhouHPuE+i3eJqjA4XClQlr2rD6nKvW80ww=" crossorigin="anonymous"><\/script>//g' $htmlFile
+            sed -i 's/<script type="text\/javascript">var Module; window.__wasmmodulecallback__(); delete window.__wasmmodulecallback__;<\/script><script src="_framework\/dotnet.6.0.1.jumy5461sl.js" defer="" integrity="sha256-awQsJ\/WxYhouHPuE+i3eJqjA4XClQlr2rD6nKvW80ww=" crossorigin="anonymous"><\/script>//g' $htmlFile
          done
     # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
       - name: Add .nojekyll file
