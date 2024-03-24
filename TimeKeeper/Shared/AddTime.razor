@@ -1,7 +1,8 @@
-﻿
+﻿@using Blazored.LocalStorage
+
 <MudItem xs="6">
     <MudTooltip Text="@NewToolTip">
-        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.Start" PickerClosed="(() => Add(newTime))" />
+        <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" @bind-Time="newTime.Start" @bind-Time:after="() => SaveStart()" PickerClosed="(() => Add(newTime))" />
     </MudTooltip>
 </MudItem>
 <MudItem xs="6">
@@ -11,6 +12,9 @@
 </MudItem>
 
 @code {
+    [Inject]
+    private ILocalStorageService localStorage { get; set; }
+    
     [Parameter]
     public EventCallback<TimeRange> DateAdded { get; set; }
     private string NewToolTip = "Click to add time range";
@@ -24,4 +28,20 @@
             newTime = new();
         }
     }
+
+    private ValueTask SaveStart() => localStorage.SetItemAsync("timekeeper-start", newTime.Start);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var start = await localStorage.GetItemAsync<TimeSpan?>("timekeeper-start");
+            if (start != null && newTime.Start == null)
+            {
+                newTime.Start = start;
+                StateHasChanged();
+            }
+        }
+    }
+
 }
