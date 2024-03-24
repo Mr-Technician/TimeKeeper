@@ -23,7 +23,7 @@
                             <MudGrid>
                                 @if (day.Times != null)
                                 {
-                                    @foreach (TimeRange time in day.Times)
+                                    @foreach (var time in day.Times)
                                     {
                                         <MudItem xs="6">
                                             <MudTooltip Text="@ExistingToolTip">
@@ -35,6 +35,7 @@
                                                 <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" Time="time.End" TimeChanged="((TimeSpan? t) => time.End = t)" PickerClosed="SetDays" />
                                             </MudTooltip>
                                         </MudItem>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Clear" Class="ml-n12 mt-5" OnClick="(() => DeleteTime(day, time))"></MudIconButton>
                                     }
                                 }
                                 <AddTime DateAdded="((TimeRange t) => AddTime(day, t))" />
@@ -70,6 +71,12 @@
         Console.WriteLine($"{time.Start}:{time.End}");
         Console.WriteLine(day.Times.Count());
         day.Times.Add(time);
+        await SetDays();
+    }
+
+    private async Task DeleteTime(Day day, TimeRange timeRange)
+    {
+        day.Times.Remove(timeRange);
         await SetDays();
     }
 
