@@ -35,7 +35,7 @@
                                                 <MudTimePicker PickerVariant="PickerVariant.Dialog" AmPm="true" Time="time.End" TimeChanged="((TimeSpan? t) => time.End = t)" PickerClosed="SetDays" />
                                             </MudTooltip>
                                         </MudItem>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Clear" Class="ml-n12 mt-5" OnClick="(() => DeleteTime(day, time))"></MudIconButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Clear" Class="ml-n8 mr-n9 mt-5" OnClick="(() => DeleteTime(day, time))"></MudIconButton>
                                     }
                                 }
                                 <AddTime DateAdded="((TimeRange t) => AddTime(day, t))" />
